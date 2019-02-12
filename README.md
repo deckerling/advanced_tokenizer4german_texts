@@ -4,7 +4,7 @@ An extended whitespace tokenizer for German text files and websites.
 ## Overview:
 The program provides:
 * a whitespace [tokenizer for German texts](src/tokenizer4germantexts/Tokenizer.java) that deletes punctuation marks etc.,
-* a [tool to download and tokenize websites](src/tokenizer4germantexts/Webloader.java) (that deletes HTML tags as well),
+* a [tool to download and tokenize websites](src/tokenizer4germantexts/Webloader.java) (which deletes HTML tags as well),
 * an (optional) "extended tokenization" feature that
     * clarifies abbreviations ("z.B." becomes "zum beispiel"),
     * transfers numbers into words ("14" becomes "vierzehn"), and
