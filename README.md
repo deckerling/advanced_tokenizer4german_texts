@@ -38,5 +38,8 @@ If you use the "standard" tokenization the output will be ...
 
 Note that not all abbreviations or numbers will be clarified (for example, "312" will remain "312" and "s.o." will remain "s.o." (so the dots won’t be deleted here)). Especially ambiguous abbreviations won’t be changed in order to avoid errors. Nevertheless, all of the replacements done by the program are based on probabilities: In some cases errors may occur, but, as this only occurs rarely, those errors will hardly affect your later work (especially if you are working with a large amount of data and neural networks).
 
+## Connect your token files with *text_file_connecter.py*
+*text_file_connecter.py* is a simple tool to create a single token file out of all token files (or rather text files in general) in a directory by connecting their contents and saving them in a new file.
+
 ## License
 The work contained in this package is licensed under the Apache License, Version 2.0 (see the file "[LICENSE](LICENSE)").
