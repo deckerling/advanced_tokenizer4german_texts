@@ -45,49 +45,49 @@ public class Tokenizer {
 	     * paths is called "file1.txt" the new directory will be "token_files/file1.txt/"). The
 	     * program will work similar if the user is about to tokenize all files in a certain
 	     * directory. */
-	    if (target.contains("/") || target.contains("\\")) {
-	        target = target.replaceAll("\\\\", "/");
-	        StringBuffer sb;
-    	    while (target.contains("/")) {
+        if (target.contains("/") || target.contains("\\")) {
+            target = target.replaceAll("\\\\", "/");
+            StringBuffer sb;
+            while (target.contains("/")) {
                 sb = new StringBuffer(target);
                 sb = sb.delete(0, target.indexOf("/")+1);
     	        target = sb.toString();
     	    }
-    	    target = "/"+target;
-	    }
-	    /* Checks if the directories "token_files" and ""token_files"+target" already exist; if
-	     * not, they will be created. */
-	    final File tokenFiles = new File("token_files"+target);
-	    if (!new File("token_files").exists()) {
-	        new File("token_files").mkdir();
-	    }
-	    if (!target.equals("") && !target.equals("/") && !tokenFiles.exists()) {
+            target = "/"+target;
+        }
+        /* Checks if the directories "token_files" and ""token_files"+target" already exist; if
+         * not, they will be created. */
+        final File tokenFiles = new File("token_files"+target);
+        if (!new File("token_files").exists()) {
+            new File("token_files").mkdir();
+        }
+        if (!target.equals("") && !target.equals("/") && !tokenFiles.exists()) {
             tokenFiles.mkdir();
-	    }
-		// Numbers and names the token files (i.e. the created token files get default names).
+        }
+    	// Numbers and names the token files (i.e. the created token files get default names).
         File tokenFile = new File("token_files"+target+"/tokens0.txt");
-		int fileNumber = 0;
-		while(tokenFile.exists()) {
+    	int fileNumber = 0;
+        while(tokenFile.exists()) {
             fileNumber++;
-		    tokenFile = new File("token_files"+target+"/tokens"+Integer.toString(fileNumber)+".txt");
-		}
-		FileInputStream fileStream = null;
+            tokenFile = new File("token_files"+target+"/tokens"+Integer.toString(fileNumber)+".txt");
+        }
+        FileInputStream fileStream = null;
         final File fileToTokenize = new File(address);
-		Scanner scanner = null;
-		String lines;
-		Writer writer = null;
-		/* Reads the input file, tokenizes its content, and writes the tokenized content to the
-		 * output file. */
-		try {
-		    fileStream = new FileInputStream(fileToTokenize);
-		    if (charset.equals("UTF-8")) {
-		        scanner = new Scanner(fileStream, charset);
-		        writer = new OutputStreamWriter(new FileOutputStream("token_files"+target+"/tokens"+Integer.toString(fileNumber)+".txt", true), StandardCharsets.UTF_8);
-		    } else {
+        Scanner scanner = null;
+        String lines;
+        Writer writer = null;
+        /* Reads the input file, tokenizes its content, and writes the tokenized content to the
+         * output file. */
+        try {
+            fileStream = new FileInputStream(fileToTokenize);
+            if (charset.equals("UTF-8")) {
+                scanner = new Scanner(fileStream, charset);
+                writer = new OutputStreamWriter(new FileOutputStream("token_files"+target+"/tokens"+Integer.toString(fileNumber)+".txt", true), StandardCharsets.UTF_8);
+            } else {
                 scanner = new Scanner(fileStream);
                 writer = new OutputStreamWriter(new FileOutputStream("token_files"+target+"/tokens"+Integer.toString(fileNumber)+".txt", true));
-		    }
-		    int count = 0, flush_factor = 1;
+            }
+            int count = 0, flush_factor = 1;
             while (scanner.hasNextLine()) {
                 lines = "";
                 for (int i=0; i<100; i++) { // working on more than one line at once makes the program run faster in many cases
@@ -142,12 +142,12 @@ public class Tokenizer {
                 }
             }
         }
-		// Deletes the "temp"-file created by "Webloader" if a website was tokenized.
-		if (address.equals("temp")) {
-		    fileToTokenize.delete();
-		}
-	}
-
+        // Deletes the "temp"-file created by "Webloader" if a website was tokenized.
+        if (address.equals("temp")) {
+            fileToTokenize.delete();
+        }
+    }
+    
     private final String tokenize(String lines) {
 	/* Tokenizes the input text (whitespace tokenization). If "extendedTokenization" is "true" some
 	 * special work like the replacement of numbers with their corresponding German numerals
@@ -183,9 +183,13 @@ public class Tokenizer {
             }
         }
         
-        lines = lines.replaceAll("[;:!#_<>~…„“”»«›‹`•·¨\"\\^\\*\\?\\{\\}\\\\]", " ")
+        lines = lines.replaceAll("[;:!#_<>~…„“”»«›‹•·..‚¨\"\\^\\*\\?\\{\\}\\\\]", " ")
                 .replaceAll(" ‘", " ")
                 .replaceAll("‘ ", " ")
+                .replaceAll(" `", " ")
+                .replaceAll("` ", " ")
+                .replaceAll(" ´", " ")
+                .replaceAll("´ ", " ")
                 .replaceAll(" ’", " ")
                 .replaceAll("’ ", " ");
         
@@ -197,7 +201,7 @@ public class Tokenizer {
                     .replaceAll("\\.( )?"+umlaut+"\\.", "|ßß|"+umlaut+"|ßß|");
         }
         lines = lines.replaceAll("[,/\\.]", " ");
-        lines = lines.replaceAll("[‘’']", "")
+        lines = lines.replaceAll("[‘’'´`]", "")
                 .replaceAll("\\|ßß\\|", ".")
                 .replaceAll("= = = = =", " ");
         lines = lines.replaceAll("= = = =", " ");
@@ -244,8 +248,8 @@ public class Tokenizer {
 	    return lines.replaceAll("\\s+", " ");
     }
 
-	private final String workOnAbbreviations(String lines) {
-    // Saves or - if "extendedTokenization" == "true" - clarifies common German abbreviations.
+    private final String workOnAbbreviations(String lines) {
+        // Saves or - if "extendedTokenization" == "true" - clarifies common German abbreviations.
         lines = lines.replaceAll(" bsp\\. ", " bsp|ßß| ")
                 .replaceAll(" et al\\. ", " et al|ßß| ")
                 .replaceAll(" etw\\. ", " etw|ßß| ")
@@ -303,35 +307,35 @@ public class Tokenizer {
         for (int i=97; i<123; i++) {
             lines = lines.replaceAll(" "+(char)i+"\\.", " "+(char)i+"|ßß|")
                     .replaceAll("\\."+(char)i+"\\.", "|ßß|"+(char)i+"|ßß|")
-                    .replaceAll((char)i+"[-––-—] &", (char)i+"YßßY &")
-                    .replaceAll((char)i+"[-––-—] und", (char)i+"YßßY und")
-                    .replaceAll((char)i+"[-––-—] oder", (char)i+"YßßY oder")
-                    .replaceAll((char)i+"[-––-—], ", (char)i+"YßßY ");
+                    .replaceAll((char)i+"[-––-—­] &", (char)i+"YßßY &")
+                    .replaceAll((char)i+"[-––-—­] und", (char)i+"YßßY und")
+                    .replaceAll((char)i+"[-––-—­] oder", (char)i+"YßßY oder")
+                    .replaceAll((char)i+"[-––-—­], ", (char)i+"YßßY ");
             for (int j=97; j<123; j++) {
-                lines = lines.replaceAll((char)i+"[-––-—]"+(char)j, (char)i+"YßßY"+(char)j);
+                lines = lines.replaceAll((char)i+"[-––-—­]"+(char)j, (char)i+"YßßY"+(char)j);
             }
         }
         for (int i=0; i<10; i++) {
-            lines = lines.replaceAll(Integer.toString(i)+"[-––-—]e", Integer.toString(i)+"YßßYe")
-                    .replaceAll(Integer.toString(i)+"[-––-—]m", Integer.toString(i)+"YßßYm")
-                    .replaceAll(Integer.toString(i)+"[-––-—]n", Integer.toString(i)+"YßßYn")
-                    .replaceAll(Integer.toString(i)+"[-––-—]r", Integer.toString(i)+"YßßYr")
-                    .replaceAll(Integer.toString(i)+"[-––-—]s", Integer.toString(i)+"YßßYs")
-                    .replaceAll(Integer.toString(i)+"[-––-—]t", Integer.toString(i)+"YßßYt");
+            lines = lines.replaceAll(Integer.toString(i)+"[-––-—­]e", Integer.toString(i)+"YßßYe")
+                    .replaceAll(Integer.toString(i)+"[-––-—­]m", Integer.toString(i)+"YßßYm")
+                    .replaceAll(Integer.toString(i)+"[-––-—­]n", Integer.toString(i)+"YßßYn")
+                    .replaceAll(Integer.toString(i)+"[-––-—­]r", Integer.toString(i)+"YßßYr")
+                    .replaceAll(Integer.toString(i)+"[-––-—­]s", Integer.toString(i)+"YßßYs")
+                    .replaceAll(Integer.toString(i)+"[-––-—­]t", Integer.toString(i)+"YßßYt");
             for (int j=0; j<10; j++) {
-                lines = lines.replaceAll(Integer.toString(i)+"( )?[-––-—]( )?"+Integer.toString(j), Integer.toString(i)+" YßßY "+Integer.toString(j));
+                lines = lines.replaceAll(Integer.toString(i)+"( )?[-––-—­]( )?"+Integer.toString(j), Integer.toString(i)+" YßßY "+Integer.toString(j));
             }
         }
         for (int i=0; i<UMLAUTE.length; i++) {
-            lines = lines.replaceAll(UMLAUTE[i]+"[-––-—] &", UMLAUTE[i]+"YßßY &")
-                    .replaceAll(UMLAUTE[i]+"[-––-—] und", UMLAUTE[i]+"YßßY und")
-                    .replaceAll(UMLAUTE[i]+"[-––-—] oder", UMLAUTE[i]+"YßßY oder")
-                    .replaceAll(UMLAUTE[i]+"[-––-—], ", UMLAUTE[i]+"YßßY ");
+            lines = lines.replaceAll(UMLAUTE[i]+"[-––-—­] &", UMLAUTE[i]+"YßßY &")
+                    .replaceAll(UMLAUTE[i]+"[-––-—­] und", UMLAUTE[i]+"YßßY und")
+                    .replaceAll(UMLAUTE[i]+"[-––-—­] oder", UMLAUTE[i]+"YßßY oder")
+                    .replaceAll(UMLAUTE[i]+"[-––-—­], ", UMLAUTE[i]+"YßßY ");
             for (int j=0; j<UMLAUTE.length; j++) {
-                lines = lines.replaceAll(UMLAUTE[i]+"[-––-—]"+UMLAUTE[j], UMLAUTE[i]+"YßßY"+UMLAUTE[j]);
+                lines = lines.replaceAll(UMLAUTE[i]+"[-––-—­]"+UMLAUTE[j], UMLAUTE[i]+"YßßY"+UMLAUTE[j]);
             }
         }
-        return lines.replaceAll("[-––-—]", " ");
+        return lines.replaceAll("[-––-—­]", " ");
 	}
 	
     private static final String replaceTimeFormats(String lines) {
