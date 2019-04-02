@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ConnectException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.UnknownHostException;
 
 // A tool to download the source code of a website and to prepare it for tokenization.
@@ -42,7 +43,9 @@ public class Webloader {
         OutputStreamWriter writer = null;
         // Tries to open the URL, to read the HTML-code, and to work on it.
         try {
-            is = url.openStream();
+            URLConnection openConnection = url.openConnection();
+            openConnection.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
+            is = openConnection.getInputStream();
             br = checkCharset()? new BufferedReader(new InputStreamReader(is, "UTF-8")) : new BufferedReader(new InputStreamReader(is));
             writer = new OutputStreamWriter(new FileOutputStream("temp"));
             String contentOfWebsite = "";
@@ -79,8 +82,11 @@ public class Webloader {
     
     private final boolean checkCharset() {
     // Returns "true" if the "charset" of the HTML-code is "UTF-8" and "false" otherwise.
-        String line;
-        try (final BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
+        try {
+            URLConnection openConnection = url.openConnection();
+            openConnection.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
+            final BufferedReader br = new BufferedReader(new InputStreamReader(openConnection.getInputStream()));
+            String line;
             while ((line = br.readLine()) != null) {
                 line = line.toLowerCase();
                 if (line.contains("charset") && line.contains("utf-8")) {
@@ -111,9 +117,37 @@ public class Webloader {
                     .replaceAll(initial[i]+"#160;", temporaryChar[i]+" ")
                     .replaceAll(initial[i]+"quot;", temporaryChar[i]+" ")
                     .replaceAll(initial[i]+"apos;", temporaryChar[i]+" ")
+                    .replaceAll(initial[i]+"[lr]aquo;", temporaryChar[i]+" ")
+                    .replaceAll(initial[i]+"[blr]dquo;", temporaryChar[i]+" ")
+                    .replaceAll(initial[i]+"sbquo;", temporaryChar[i]+" ")
+                    .replaceAll(initial[i]+"[lr]s(a)?quo;", temporaryChar[i]+" ")
+                    .replaceAll(initial[i]+"[mn]dash;", temporaryChar[i]+"-")
+                    .replaceAll(initial[i]+"[dlru]arr;", temporaryChar[i]+" ")
+                    .replaceAll(initial[i]+"#859[2-5];", temporaryChar[i]+" ")
+                    .replaceAll(initial[i]+"hellip;", temporaryChar[i]+" ")
+                    .replaceAll(initial[i]+"#8230;", temporaryChar[i]+" ")
                     .replaceAll(initial[i]+"#3[49];", temporaryChar[i]+" ")
+                    .replaceAll(initial[i]+"frasl;", temporaryChar[i]+" ")
                     .replaceAll(initial[i]+"amp;", temporaryChar[i]+"&")
                     .replaceAll(initial[i]+"#38;", temporaryChar[i]+"&")
+                    .replaceAll(initial[i]+"[Aa]acute;", temporaryChar[i]+"á")
+                    .replaceAll(initial[i]+"[Aa]circ;", temporaryChar[i]+"â")
+                    .replaceAll(initial[i]+"[Aa]grave;", temporaryChar[i]+"à")
+                    .replaceAll(initial[i]+"[Ee]acute;", temporaryChar[i]+"é")
+                    .replaceAll(initial[i]+"[Ee]circ;", temporaryChar[i]+"ê")
+                    .replaceAll(initial[i]+"[Ee]grave;", temporaryChar[i]+"è")
+                    .replaceAll(initial[i]+"[Ii]acute;", temporaryChar[i]+"í")
+                    .replaceAll(initial[i]+"[Ii]circ;", temporaryChar[i]+"î")
+                    .replaceAll(initial[i]+"[Oo]acute;", temporaryChar[i]+"ó")
+                    .replaceAll(initial[i]+"[Oo]circ;", temporaryChar[i]+"ô")
+                    .replaceAll(initial[i]+"[Oo]grave;", temporaryChar[i]+"ò")
+                    .replaceAll(initial[i]+"[Uu]acute;", temporaryChar[i]+"ú")
+                    .replaceAll(initial[i]+"[Uu]circ;", temporaryChar[i]+"û")
+                    .replaceAll(initial[i]+"AElig;", temporaryChar[i]+"æ")
+                    .replaceAll(initial[i]+"aelig;", temporaryChar[i]+"æ")
+                    .replaceAll(initial[i]+"OElig;", temporaryChar[i]+"œ")
+                    .replaceAll(initial[i]+"oelig;", temporaryChar[i]+"œ")
+                    .replaceAll(initial[i]+"permil;", temporaryChar[i]+" promille ")
                     .replaceAll(initial[i]+"cent;", temporaryChar[i]+" cent ")
                     .replaceAll(initial[i]+"#162;", temporaryChar[i]+" cent ")
                     .replaceAll(initial[i]+"euro;", temporaryChar[i]+" euro ")
@@ -124,29 +158,53 @@ public class Webloader {
                     .replaceAll(initial[i]+"#165;", temporaryChar[i]+" yen ")
                     .replaceAll(initial[i]+"copy;", temporaryChar[i]+" copyright ")
                     .replaceAll(initial[i]+"#169;", temporaryChar[i]+" copyright ")
+                    .replaceAll(initial[i]+"frac14;", temporaryChar[i]+" ein viertel ")
+                    .replaceAll(initial[i]+"#188;", temporaryChar[i]+" ein viertel ")
+                    .replaceAll(initial[i]+"frac34;", temporaryChar[i]+" drei viertel ")
+                    .replaceAll(initial[i]+"#190;", temporaryChar[i]+" drei viertel ")
+                    .replaceAll(initial[i]+"frac12;", temporaryChar[i]+"½")
+                    .replaceAll(initial[i]+"#189;", temporaryChar[i]+"½")
+                    .replaceAll(initial[i]+"times;", temporaryChar[i]+"×")
+                    .replaceAll(initial[i]+"#215;", temporaryChar[i]+"×")
+                    .replaceAll(initial[i]+"divide;", temporaryChar[i]+"÷")
+                    .replaceAll(initial[i]+"#247;", temporaryChar[i]+"÷")
                     .replaceAll(initial[i]+"sect;", temporaryChar[i]+"§")
                     .replaceAll(initial[i]+"#167;", temporaryChar[i]+"§")
                     .replaceAll(initial[i]+"dagger;", temporaryChar[i]+"†")
                     .replaceAll(initial[i]+"#134;", temporaryChar[i]+"†")
-                    .replaceAll(initial[i]+"auml;", temporaryChar[i]+"ä")
+                    .replaceAll(initial[i]+"[Aa]uml;", temporaryChar[i]+"ä")
                     .replaceAll(initial[i]+"#228;", temporaryChar[i]+"ä")
-                    .replaceAll(initial[i]+"Auml;", temporaryChar[i]+"Ä")
-                    .replaceAll(initial[i]+"#196;", temporaryChar[i]+"Ä")
-                    .replaceAll(initial[i]+"ouml;", temporaryChar[i]+"ö")
+                    .replaceAll(initial[i]+"#196;", temporaryChar[i]+"ä")
+                    .replaceAll(initial[i]+"[Oo]uml;", temporaryChar[i]+"ö")
                     .replaceAll(initial[i]+"#246;", temporaryChar[i]+"ö")
-                    .replaceAll(initial[i]+"Ouml;", temporaryChar[i]+"Ö")
-                    .replaceAll(initial[i]+"#214;", temporaryChar[i]+"Ö")
-                    .replaceAll(initial[i]+"uuml;", temporaryChar[i]+"ü")
+                    .replaceAll(initial[i]+"#214;", temporaryChar[i]+"ö")
+                    .replaceAll(initial[i]+"[Uu]uml;", temporaryChar[i]+"ü")
                     .replaceAll(initial[i]+"#252;", temporaryChar[i]+"ü")
-                    .replaceAll(initial[i]+"Uuml;", temporaryChar[i]+"Ü")
-                    .replaceAll(initial[i]+"#220;", temporaryChar[i]+"Ü")
+                    .replaceAll(initial[i]+"#220;", temporaryChar[i]+"ü")
                     .replaceAll(initial[i]+"szlig;", temporaryChar[i]+"ß")
                     .replaceAll(initial[i]+"#223;", temporaryChar[i]+"ß")
+                    .replaceAll(initial[i]+"[Cc]cedil;", temporaryChar[i]+"ç")
+                    .replaceAll(initial[i]+"#231;", temporaryChar[i]+"ç")
+                    .replaceAll(initial[i]+"thorn;", temporaryChar[i]+"þ")
+                    .replaceAll(initial[i]+"THORN;", temporaryChar[i]+"þ")
+                    .replaceAll(initial[i]+"#254;", temporaryChar[i]+"þ")
+                    .replaceAll(initial[i]+"#222;", temporaryChar[i]+"þ")
+                    .replaceAll(initial[i]+"eth;", temporaryChar[i]+"ð")
+                    .replaceAll(initial[i]+"#240;", temporaryChar[i]+"ð")
+                    .replaceAll(initial[i]+"[Aa]ring;", temporaryChar[i]+"å")
+                    .replaceAll(initial[i]+"#229;", temporaryChar[i]+"å")
+                    .replaceAll(initial[i]+"#197;", temporaryChar[i]+"å")
+                    .replaceAll(initial[i]+"[Oo]slash;", temporaryChar[i]+"ø")
+                    .replaceAll(initial[i]+"#248;", temporaryChar[i]+"ø")
+                    .replaceAll(initial[i]+"#216;", temporaryChar[i]+"ø")
+                    .replaceAll(initial[i]+"[Yy]acute;", temporaryChar[i]+"ý")
+                    .replaceAll(initial[i]+"#253;", temporaryChar[i]+"ý")
                     .replaceAll(initial[i]+"#45;", temporaryChar[i]+"-")
                     .replaceAll(initial[i]+"#173;", temporaryChar[i]+"-")
                     .replaceAll(initial[i]+"#448;", temporaryChar[i]+" ")
                     .replaceAll(initial[i]+"#8211;", temporaryChar[i]+" ");
         }
+        tempFileContent = tempFileContent.replaceAll("&#.*?;", "");
         return tempFileContent.trim();
     }
 }
